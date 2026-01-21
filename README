@@ -1,3 +1,13 @@
+FORK with some additional buttons in the 6502 expert UI for IRQ/NMI/RDY/RESET/SO.
+Also, this version starts with the normal 6502 reset sequence and doesn't hide it.
+
+https://c1570.github.io/visual6502/expert.html
+
+Note that even in the original version you can set up the simulation using
+URL parameters, see expertWires.js/setupParams().
+
+--
+
 This is the JavaScript simulator from the visual6502.org project:
 www.visual6502.org/JSSim
 

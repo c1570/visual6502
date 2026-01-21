@@ -30,9 +30,8 @@ var chipname='6502';
 var nodenamereset='res';
 var presetLogLists=[
 		['cycle'],
-		['ab','db','rw','Fetch','pc','a','x','y','s','p'],
-		['Execute','State'],
-		['ir','tcstate','-pd'],
+		['ab','db','rw','sync','pc','Fetch','rdy','irq','nmi','so','a','x','y','s','p','Execute','State','ir'],
+		['tcstate','-pd'],
 		['adl','adh','sb','alu'],
 		['alucin','alua','alub','alucout','aluvout','dasb'],
 		['plaOutputs','DPControl'],
@@ -153,10 +152,10 @@ function initChip(){
 	setLow('clk0');
 	setHigh('rdy'); setLow('so');
 	setHigh('irq'); setHigh('nmi');
-	recalcNodeList(allNodes()); 
+	recalcNodeList(allNodes());
 	for(var i=0;i<8;i++){setHigh('clk0'), setLow('clk0');}
 	setHigh(nodenamereset);
-	for(var i=0;i<18;i++){halfStep();} // avoid updating graphics and trace buffer before user code
+	// Reset sequence will now be visible to the user, not pre-run
 	refresh();
 	cycle = 0;
 	trace = Array();
@@ -635,7 +634,7 @@ function initLogbox(names){
 	logbox.innerHTML = "<tr>"+logStream.join("</tr><tr>")+"</tr>";
 }
 
-var logboxAppend=true;
+var logboxAppend=false;
 
 // can append or prepend new states to the log table
 // when we reverse direction we need to reorder the log stream

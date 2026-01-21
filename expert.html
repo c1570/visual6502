@@ -141,6 +141,19 @@ click here and type if your program handles input
 	  <input type="button" value="Clear Log" onclick="updateLoglevel(loglevel)" />
 	  </form>
 	  <br />
+	  <form>
+	  <strong>Signal Controls:</strong><br />
+	  IRQ: <input type="button" id="irq-button" onclick="toggleSignal('irq')" />
+	  <br />
+	  NMI: <input type="button" id="nmi-button" onclick="toggleSignal('nmi')" /> triggers on negative edge
+	  <br />
+	  RDY: <input type="button" id="rdy-button" onclick="toggleSignal('rdy')" />
+	  <br />
+	  SO: <input type="button" id="so-button" onclick="toggleSignal('so')" /> triggers on negative edge
+	  <br />
+	  RESET: <input type="button" id="res-button" onclick="toggleSignal('res')" />
+	  </form>
+	  <br />
 	</div>
 	<div id="logstreamscroller">
 	       <table class="logstream" id="logstream"></table>

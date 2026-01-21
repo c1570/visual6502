@@ -108,6 +108,7 @@ function setup_part4(){
 	logThese=signalSet(loglevel);
 	loadProgram();
 	setupConsole();
+	initializeSignalButtons();
 	if(noSimulation){
 		stopChip();
 		running=undefined;
@@ -316,6 +317,11 @@ function mouseMove(e){
 
 function mouseUp(e){
 	if(!moved) handleClick(e);
+	chipsurround.onmousemove = undefined;
+	chipsurround.onmouseup = undefined;
+}
+
+function mouseLeave(e){
 	chipsurround.onmousemove = undefined;
 	chipsurround.onmouseup = undefined;
 }
@@ -643,4 +649,67 @@ function setChipStyle(props){
 		hilite.style[i] = props[i];
 		hitbuffer.style[i] = props[i];
 	}
+}
+
+// Track current state of signals (true = high voltage, false = low voltage)
+var signalStates = {
+	'irq': true,   // IRQ starts high (inactive)
+	'nmi': true,   // NMI starts high (inactive)
+	'rdy': true,   // RDY starts high
+	'res': true,   // RESET starts high (inactive)
+	'so': false    // SO starts low (inactive)
+};
+
+// Toggle a signal between states
+function toggleSignal(signalName){
+	// Toggle the voltage state
+	signalStates[signalName] = !signalStates[signalName];
+	var isHigh = signalStates[signalName];
+
+	// Verify nodenames exists and has this signal
+	if(typeof nodenames === 'undefined' || typeof nodenames[signalName] === 'undefined'){
+		console.error('Signal ' + signalName + ' not found in nodenames!');
+		return;
+	}
+
+	// Set the physical signal
+	if(isHigh){
+		setHigh(signalName);
+		console.log('Set ' + signalName + ' HIGH (5V)');
+	} else {
+		setLow(signalName);
+		console.log('Set ' + signalName + ' LOW (0V)');
+	}
+
+	// Update the button display
+	updateSignalButton(signalName, isHigh);
+}
+
+// Update the button text to show signal state (active/inactive with voltage)
+function updateSignalButton(signalName, isHigh){
+	var button = document.getElementById(signalName + '-button');
+	if(!button) return;
+
+	// IRQ and RESET are active-low, RDY is active-high
+	// NMI is active-low (triggered on negative edge)
+	// SO is active-high (triggered on negative edge)
+	var isActiveLow = (signalName === 'irq' || signalName === 'nmi' || signalName === 'res' || signalName === 'so');
+	var isActive = isActiveLow ? !isHigh : isHigh;
+
+	var stateText = isActive ? 'ACTIVE' : 'INACTIVE';
+	var voltageText = isHigh ? '5V' : '0V';
+	var stateColor = isActive ? 'green' : 'red';
+
+	button.value = stateText + ' (' + voltageText + ')';
+	button.style.color = stateColor;
+	button.style.fontWeight = 'bold';
+}
+
+// Initialize signal buttons with their current state
+function initializeSignalButtons(){
+	updateSignalButton('irq', signalStates['irq']);
+	updateSignalButton('nmi', signalStates['nmi']);
+	updateSignalButton('rdy', signalStates['rdy']);
+	updateSignalButton('res', signalStates['res']);
+	updateSignalButton('so', signalStates['so']);
 }
